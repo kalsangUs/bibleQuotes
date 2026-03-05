@@ -28,7 +28,7 @@ export default async function HomePage() {
         <p className="text-2xl leading-relaxed text-zinc-800 dark:text-zinc-100">
           &ldquo;{random_verse.text.trim()}&rdquo;
         </p>
-        <p className="mt-2 text-lg font-semibold text-zinc-600 dark:text-zinc-400">
+        <p className="mt-4 text-lg font-semibold text-zinc-600 dark:text-zinc-400">
           {random_verse.book} {random_verse.chapter}:{random_verse.verse}
         </p>
        
