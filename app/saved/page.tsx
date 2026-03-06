@@ -10,8 +10,8 @@ export default function SavedPage() {
   const removeQuote = useMutation(api.quotes.remove);
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-12">
-      <h1 className="mb-8 text-2xl font-bold">Saved Quotes</h1>
+    <div className="mx-auto max-w-2xl px-4 sm:px-6 py-8 sm:py-12">
+      <h1 className="mb-6 sm:mb-8 text-2xl font-bold">Saved Quotes</h1>
       {quotes === undefined ? (
         <p className="text-muted-foreground">Loading...</p>
       ) : quotes.length === 0 ? (
@@ -19,13 +19,13 @@ export default function SavedPage() {
           No saved quotes yet. Go discover some verses!
         </p>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {quotes.map((quote) => (
             <div
               key={quote._id}
-              className="rounded-lg border bg-card p-6 shadow-sm"
+              className="rounded-lg border bg-card p-4 sm:p-6 shadow-sm"
             >
-              <p className="text-lg leading-relaxed">
+              <p className="text-base sm:text-lg leading-relaxed">
                 &ldquo;{quote.text}&rdquo;
               </p>
               <div className="mt-3 flex items-center justify-between">
@@ -34,8 +34,9 @@ export default function SavedPage() {
                 </p>
                 <Button
                   variant="ghost"
-                  size="icon"
+                  size="icon-lg"
                   onClick={() => removeQuote({ id: quote._id })}
+                  aria-label="Remove saved quote"
                 >
                   <TrashIcon className="h-4 w-4" />
                 </Button>

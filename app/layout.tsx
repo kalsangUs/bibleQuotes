@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ConvexClientProvider } from "./ConvexClientProvider";
@@ -31,27 +32,43 @@ export default function RootLayout({
   return (
     <ConvexAuthNextjsServerProvider>
       <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+        {process.env.NODE_ENV === "development" && (
+          <Script
+            src="//unpkg.com/react-grab/dist/index.global.js"
+            crossOrigin="anonymous"
+            strategy="beforeInteractive"
+          />
+        )}
+        {process.env.NODE_ENV === "development" && (
+          <Script
+            src="//unpkg.com/@react-grab/mcp/dist/client.global.js"
+            strategy="lazyOnload"
+          />
+        )}
+      </head>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
           <ConvexClientProvider>
-            <SidebarProvider defaultOpen={false}>
-              <AppSidebar />
-              <main className="flex-1">
-                <SidebarTrigger className="m-2" />
-                <ThemeProvider
-                  attribute="class"
-                  defaultTheme="system"
-                  enableSystem
-                  disableTransitionOnChange
-                >
-                  <div className="fixed top-2 right-2 z-50">
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <SidebarProvider defaultOpen={false}>
+                <AppSidebar />
+                <main className="flex-1">
+                  <div className="flex items-center justify-between p-2">
+                    <SidebarTrigger />
                     <ThemeToggle />
                   </div>
                   {children}
-                </ThemeProvider>
-              </main>
-            </SidebarProvider>
+                </main>
+              </SidebarProvider>
+            </ThemeProvider>
           </ConvexClientProvider>
         </body>
       </html>

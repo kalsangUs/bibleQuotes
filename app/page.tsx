@@ -29,6 +29,7 @@ export default function HomePage() {
     null
   );
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [liked, setLiked] = useState(false);
   const user = useQuery(api.users.me);
@@ -38,12 +39,26 @@ export default function HomePage() {
 
   const fetchVerse = useCallback(async () => {
     setLoading(true);
+    setError(null);
     setSaved(false);
     setLiked(false);
     try {
       const res = await fetch("https://bible-api.com/data/web/random");
+      if (!res.ok) throw new Error("Failed to fetch verse");
       const data: BibleApiResponse = await res.json();
-      setVerse(data.random_verse);
+      const v = data?.random_verse;
+      if (
+        !v ||
+        typeof v.book !== "string" ||
+        typeof v.chapter !== "number" ||
+        typeof v.verse !== "number" ||
+        typeof v.text !== "string"
+      ) {
+        throw new Error("Invalid response from API");
+      }
+      setVerse(v);
+    } catch {
+      setError("Could not load verse. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -69,37 +84,46 @@ export default function HomePage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-dvh flex-col">
       <div className="flex flex-1 items-center justify-center">
-        <div className="max-w-xl px-8 py-12 text-center">
-          {verse ? (
+        <div className="max-w-xl px-5 sm:px-8 py-12 text-center">
+          {error ? (
+            <div className="text-center">
+              <p className="text-lg text-red-600 dark:text-red-400">{error}</p>
+              <Button variant="outline" className="mt-4" onClick={fetchVerse}>
+                <RefreshCwIcon className="mr-2 h-4 w-4" />
+                Retry
+              </Button>
+            </div>
+          ) : verse ? (
             <>
-              <p className="text-2xl font-extralight tracking-tight leading-normal text-zinc-800 dark:text-zinc-100 font-serif" style={{ fontFamily: "serif" }}>
+              <p className="text-xl sm:text-2xl md:text-3xl font-extralight tracking-tight leading-relaxed text-zinc-800 dark:text-zinc-100 font-serif">
                 &ldquo;{verse.text.trim()}&rdquo;
               </p>
-              <p className="mt-2 text-lg tracking-tighter font-semibold text-zinc-600 dark:text-zinc-400">
+              <p className="mt-3 text-base sm:text-lg tracking-tighter font-semibold text-zinc-600 dark:text-zinc-400">
                 {verse.book} {verse.chapter}:{verse.verse}
               </p>
             </>
           ) : (
-            <p className="text-xl text-zinc-600 dark:text-zinc-400">
-              Loading...
-            </p>
+            <div className="space-y-4">
+              <div className="mx-auto h-6 w-3/4 animate-pulse rounded bg-zinc-200 dark:bg-zinc-700" />
+              <div className="mx-auto h-6 w-2/3 animate-pulse rounded bg-zinc-200 dark:bg-zinc-700" />
+              <div className="mx-auto h-5 w-1/3 animate-pulse rounded bg-zinc-200 dark:bg-zinc-700 mt-2" />
+            </div>
           )}
         </div>
       </div>
       {verse && (
-        <div className="flex items-center justify-center gap-3 pb-20">
-          <Button variant="outline" onClick={fetchVerse} disabled={loading}>
-            <RefreshCwIcon className=" h-4 w-4" />
-            {/* New Verse */}
+        <div className="flex items-center justify-center gap-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] mb-4">
+          <Button variant="outline" size="icon-lg" onClick={fetchVerse} disabled={loading}>
+            <RefreshCwIcon className="h-5 w-5" />
           </Button>
-          <Button onClick={handleSave} disabled={saved}>
-            <BookmarkIcon className="h-4 w-4" />
-            {/* {saved ? "Saved" : "Save"} */}
+          <Button size="icon-lg" onClick={handleSave} disabled={saved}>
+            <BookmarkIcon className="h-5 w-5" />
           </Button>
           <Button
             variant={liked ? "default" : "outline"}
+            size="icon-lg"
             disabled={liked}
             onClick={async () => {
               if (!verse) return;
@@ -117,9 +141,8 @@ export default function HomePage() {
             }}
           >
             <HeartIcon
-              className={` h-4 w-2 ${liked ? "fill-red-500 text-red-500" : ""}`}
+              className={`h-5 w-5 ${liked ? "fill-red-500 text-red-500" : ""}`}
             />
-            {/* {liked ? "Liked" : "Like"} */}
           </Button>
         </div>
       )}
