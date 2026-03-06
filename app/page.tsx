@@ -97,7 +97,7 @@ export default function HomePage() {
             </div>
           ) : verse ? (
             <>
-              <p className="text-xl sm:text-2xl md:text-3xl font-extralight tracking-tight leading-relaxed text-zinc-800 dark:text-zinc-100 font-serif">
+              <p className="text-xl sm:text-2xl md:text-2xl font-extralight tracking-tight leading-relaxed text-zinc-800 dark:text-zinc-100 font-serif">
                 &ldquo;{verse.text.trim()}&rdquo;
               </p>
               <p className="mt-3 text-base sm:text-lg tracking-tighter font-semibold text-zinc-600 dark:text-zinc-400">
